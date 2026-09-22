@@ -1,8 +1,6 @@
-using MiniShop.Api.Services.Abstractions;
-
 namespace MiniShop.Api.Services;
 
-public class UtcClock : IClock
+public class SystemClock : IClock
 {
     public DateTime UtcNow
     {

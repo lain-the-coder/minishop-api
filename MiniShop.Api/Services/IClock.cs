@@ -1,4 +1,4 @@
-namespace MiniShop.Api.Services.Abstractions;
+namespace MiniShop.Api.Services;
 
 public interface IClock
 {

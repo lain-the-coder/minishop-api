@@ -1,9 +1,9 @@
-namespace MiniShop.Api.Services.Abstractions;
+namespace MiniShop.Api.Services;
 
 public interface ICurrentUser
 {
     bool IsAuthenticated { get; }
-    string? ObjectId { get; }
+    string? ExternalId { get; }
     string? Name { get; }
     IReadOnlyList<string> Roles { get; }
 }

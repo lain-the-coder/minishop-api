@@ -1,8 +1,6 @@
-using MiniShop.Api.Services.Abstractions;
-
 namespace MiniShop.Api.Services;
 
-public class StubCurrentUser : ICurrentUser
+public class CurrentUser : ICurrentUser
 {
     public bool IsAuthenticated
     {
@@ -12,7 +10,7 @@ public class StubCurrentUser : ICurrentUser
         }
     }
 
-    public string? ObjectId
+    public string? ExternalId
     {
         get
         {

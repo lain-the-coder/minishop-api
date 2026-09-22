@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using MiniShop.Api.Services.Abstractions;
+using MiniShop.Api.Services;
 
 namespace MiniShop.Api.Controllers;
 
@@ -13,7 +13,7 @@ public class MeController(ICurrentUser currentUser, IClock clock) : ControllerBa
         var response = new
         {
             IsAuthenticated = currentUser.IsAuthenticated,
-            ObjectId = currentUser.ObjectId,
+            ExternalId = currentUser.ExternalId,
             Name = currentUser.Name,
             Roles = currentUser.Roles,
             ServerTimeUtc = clock.UtcNow
