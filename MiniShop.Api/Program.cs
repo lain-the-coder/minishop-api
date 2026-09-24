@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using MiniShop.Api.Data;
 using MiniShop.Api.Demo;
 using MiniShop.Api.Services;
 
@@ -14,6 +16,9 @@ builder.Services.AddScoped<ScopedOp>();
 builder.Services.AddTransient<TransientOp>();
 builder.Services.AddSingleton<IClock, SystemClock>();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
+builder.Services.AddDbContext<MiniShopDbContext>(options
+    => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
