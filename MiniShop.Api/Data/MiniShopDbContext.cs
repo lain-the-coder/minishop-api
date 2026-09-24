@@ -19,12 +19,23 @@ public class MiniShopDbContext(DbContextOptions<MiniShopDbContext> options)
             p.Property(x => x.Name).HasMaxLength(200);
             p.Property(x => x.Price).HasPrecision(18, 2);
             p.Property(x => x.Description).HasMaxLength(2000);
+            // Seed 3 products (varied price/stock, one with description, one null)
+            p.HasData(
+                new { Id = 1, Name = "Coffee Mug", Price = 14.99m, Stock = 120, Description = (string?)"High-grade ceramic mug" },
+                new { Id = 2, Name = "Mechanical Keyboard", Price = 89.50m, Stock = 45, Description = (string?)"Tenkeyless mechanical keyboard" },
+                new { Id = 3, Name = "Mousepad", Price = 9.99m, Stock = 200, Description = (string?)null }
+            );
         });
 
         modelBuilder.Entity<User>(u =>
         {
             u.Property(x => x.Email).HasMaxLength(256);
             u.HasIndex(x => x.Email).IsUnique();
+            // Seed 2 users matching dev token identities
+            u.HasData(
+                new { Id = 1, Email = "alice@minishop.test" },
+                new { Id = 2, Email = "bob@minishop.test" }
+            );
         });
 
         modelBuilder.Entity<Order>(o =>
