@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MiniShop.Api.Data;
 using MiniShop.Api.Services;
 
 namespace MiniShop.Api.Controllers;
@@ -20,5 +22,21 @@ public class MeController(ICurrentUser currentUser, IClock clock) : ControllerBa
         };
 
         return Ok(response);
+    }
+
+    [HttpGet("test-products")]
+    public async Task<IActionResult> GetTestProducts([FromServices] MiniShopDbContext db)
+    {
+        Console.WriteLine(">>> STEP 1: Referencing DbSet and building query...");
+        var query = db.Products.Where(p => p.Price > 10);
+
+        Console.WriteLine(">>> STEP 2: Waiting 3 seconds (No SQL should have run yet)...");
+        await Task.Delay(3000);
+
+        Console.WriteLine(">>> STEP 3: Now calling ToListAsync()...");
+        var products = await query.ToListAsync();
+
+        Console.WriteLine(">>> STEP 4: ToListAsync finished.");
+        return Ok(products);
     }
 }

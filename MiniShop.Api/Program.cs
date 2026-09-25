@@ -17,8 +17,15 @@ builder.Services.AddTransient<TransientOp>();
 builder.Services.AddSingleton<IClock, SystemClock>();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
-builder.Services.AddDbContext<MiniShopDbContext>(options
-    => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<MiniShopDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    if (builder.Environment.IsDevelopment())
+    {
+        options.LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging();
+    }
+});
 
 var app = builder.Build();
 
