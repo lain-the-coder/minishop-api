@@ -39,4 +39,29 @@ public class MeController(ICurrentUser currentUser, IClock clock) : ControllerBa
         Console.WriteLine(">>> STEP 4: ToListAsync finished.");
         return Ok(products);
     }
+
+    [HttpGet("test-include")]
+    public async Task<IActionResult> TestInclude([FromServices] MiniShopDbContext db)
+    {
+        var orders = await db.Orders
+            .Include(o => o.Items)
+            .ToListAsync();
+
+        return Ok(orders);
+    }
+
+    [HttpGet("test-projection")]
+    public async Task<IActionResult> TestProjection([FromServices] MiniShopDbContext db)
+    {
+        var orders = await db.Orders
+            .Select(o => new
+            {
+                OrderId = o.Id,
+                OrderStatus = o.Status,
+                ItemCount = o.Items.Count()
+            })
+            .ToListAsync();
+
+        return Ok(orders);
+    }
 }
