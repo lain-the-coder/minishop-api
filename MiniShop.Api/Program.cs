@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MiniShop.Api.Data;
 using MiniShop.Api.Demo;
+using MiniShop.Api.Middleware;
 using MiniShop.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,8 @@ builder.Services.AddDbContext<MiniShopDbContext>(options =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Use(async (context, next) =>
 {

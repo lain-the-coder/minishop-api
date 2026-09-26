@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MiniShop.Api.Data;
 using MiniShop.Api.Dtos;
 using MiniShop.Api.Entities;
+using MiniShop.Api.Services;
 
 namespace MiniShop.Api.Controllers;
 
@@ -46,13 +47,20 @@ public class ProductsController(MiniShopDbContext db) : ControllerBase
             })
             .FirstOrDefaultAsync();
 
-        if (product == null)
+        if (product is null)
         {
-            return NotFound();
+            throw new NotFoundException($"Product {id} not found");
         }
 
         return Ok(product);
     }
+
+    [HttpGet("boom")]
+    public IActionResult Boom()
+    {
+        throw new InvalidOperationException("Secret database connection string failure: boom!");
+    }
+
     // POST: /api/products
     [HttpPost]
     public async Task<ActionResult<ProductDto>> Create(CreateProductRequest request)
