@@ -3,6 +3,7 @@ using MiniShop.Api.Data;
 using MiniShop.Api.Demo;
 using MiniShop.Api.Middleware;
 using MiniShop.Api.Services;
+using MiniShop.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ builder.Services.AddDbContext<MiniShopDbContext>(options =>
                 .EnableSensitiveDataLogging();
     }
 });
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
