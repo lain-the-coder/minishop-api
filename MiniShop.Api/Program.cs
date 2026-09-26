@@ -29,6 +29,20 @@ builder.Services.AddDbContext<MiniShopDbContext>(options =>
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("--> IN 1");
+    await next(context);
+    Console.WriteLine("<-- OUT 1");
+});
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("--> IN 2");
+    await next(context);
+    Console.WriteLine("<-- OUT 2");
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
