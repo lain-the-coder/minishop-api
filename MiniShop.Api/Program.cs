@@ -6,6 +6,7 @@ using MiniShop.Api.Middleware;
 using MiniShop.Api.Services;
 using MiniShop.Repositories;
 using MiniShop.Services;
+using System.IdentityModel.Tokens.Jwt;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,6 +49,7 @@ builder.Services.AddSingleton<SingletonOp>();
 builder.Services.AddScoped<ScopedOp>();
 builder.Services.AddTransient<TransientOp>();
 builder.Services.AddSingleton<IClock, SystemClock>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 builder.Services.AddDbContext<MiniShopDbContext>(options =>
@@ -64,6 +66,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication()
     .AddJwtBearer();
 

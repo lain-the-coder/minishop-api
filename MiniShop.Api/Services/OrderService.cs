@@ -5,10 +5,11 @@ using MiniShop.Repositories;
 
 namespace MiniShop.Services;
 
-public class OrderService(IUnitOfWork uow, IClock clock) : IOrderService
+public class OrderService(IUnitOfWork uow, IClock clock, ICurrentUser currentUser) : IOrderService
 {
-    public async Task<OrderDto> PlaceOrderAsync(int callerId, CreateOrderRequest request)
+    public async Task<OrderDto> PlaceOrderAsync(CreateOrderRequest request)
     {
+        var callerId = await ResolveCallerIdAsync();
         // 1. Validate request shape
         if (request.Items is null || request.Items.Count == 0)
         {
@@ -77,8 +78,9 @@ public class OrderService(IUnitOfWork uow, IClock clock) : IOrderService
         return ToDto(order, productMap);
     }
 
-    public async Task<List<OrderDto>> GetMyOrdersAsync(int callerId)
+    public async Task<List<OrderDto>> GetMyOrdersAsync()
     {
+        var callerId = await ResolveCallerIdAsync();
         var orders = await uow.Orders.ListByUserAsync(callerId);
 
         // Fetch products to map product names in the DTOs
@@ -108,4 +110,26 @@ public class OrderService(IUnitOfWork uow, IClock clock) : IOrderService
             PriceAtPurchase = i.PriceAtPurchase
         }).ToList()
     };
+
+    private async Task<int> ResolveCallerIdAsync(CancellationToken cancellationToken = default)
+    {
+        var externalId = currentUser.ExternalId
+            ?? throw new InvalidOperationException("Cannot resolve caller ID without an authenticated user.");
+
+        var user = await uow.Users.GetByExternalIdAsync(externalId, cancellationToken);
+        if (user is null)
+        {
+            // Just-in-time provisioning: create the local row on first contact
+            user = new User
+            {
+                Email = $"{externalId}@minishop.test",
+                ExternalId = externalId
+            };
+
+            uow.Users.Add(user);
+            await uow.SaveChangesAsync(cancellationToken);
+        }
+
+        return user.Id;
+    }
 }

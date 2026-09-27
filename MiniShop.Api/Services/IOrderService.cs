@@ -4,6 +4,6 @@ namespace MiniShop.Services;
 
 public interface IOrderService
 {
-    Task<OrderDto> PlaceOrderAsync(int callerId, CreateOrderRequest request);
-    Task<List<OrderDto>> GetMyOrdersAsync(int callerId);
+    Task<OrderDto> PlaceOrderAsync(CreateOrderRequest request);
+    Task<List<OrderDto>> GetMyOrdersAsync();
 }

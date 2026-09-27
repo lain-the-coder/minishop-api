@@ -11,11 +11,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<OrderDto>> PlaceOrder([FromBody] CreateOrderRequest request)
     {
-        // TODO: Day 3 Block 2b will map ICurrentUser.ExternalId -> User.Id.
-        // For tonight, use Alice (seeded user Id = 1).
-        const int callerId = 1;
-
-        var order = await orderService.PlaceOrderAsync(callerId, request);
+        var order = await orderService.PlaceOrderAsync(request);
 
         return CreatedAtAction(nameof(GetMyOrders), new { id = order.Id }, order);
     }
@@ -23,10 +19,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpGet("mine")]
     public async Task<ActionResult<List<OrderDto>>> GetMyOrders()
     {
-        // TODO: Day 3 Block 2b will map ICurrentUser.ExternalId -> User.Id.
-        const int callerId = 1;
-
-        var orders = await orderService.GetMyOrdersAsync(callerId);
+        var orders = await orderService.GetMyOrdersAsync();
         return Ok(orders);
     }
 }

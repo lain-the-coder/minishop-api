@@ -1,0 +1,22 @@
+feat(auth): claims-based authorization and token identity mapping
+
+Topic: authentication vs authorization, claims -> local user, role policies.
+Completes the MiniShop .NET build.
+
+- Migration AddUserExternalId: nullable column (additive against seeded rows) +
+  unique index with HasFilter('[ExternalId] IS NOT NULL') - SQL Server treats multiple
+  NULLs as duplicates in a plain unique index. Seed updated: alice/bob ExternalId
+  matches the sub claim their dev tokens carry.
+- IUserRepository.GetByExternalIdAsync: FirstOrDefaultAsync, not FindAsync - not a PK lookup.
+- Services/CurrentUser.cs now real: reads HttpContext.User via IHttpContextAccessor
+  (Singleton holding an AsyncLocal; CurrentUser itself stays Scoped - per-request identity).
+  Same class, same registration as the Day 1 stub: only the implementation changed.
+  Claim-mapping trap: .NET rewrites sub -> ClaimTypes.NameIdentifier and roles ->
+  ClaimTypes.Role by default, which is why Authorize(Roles=...) works unconfigured.
+- OrderService.ResolveCallerIdAsync: just-in-time provisioning - external id from the
+  claim -> Users.ExternalId -> Users.Id; row created on first authenticated call.
+  Caller identity NEVER comes from the request body, so CreateOrderRequest has no UserId.
+- Authorize on OrdersController; Authorize(Policy=CanManageCatalog) on product writes
+  (policy = one named rule, composable, vs Roles on each attribute); product GETs anonymous.
+- Verified: no token -> 401 (identity unknown); bob -> 403 (authenticated, wrong role);
+  alice -> 201; /api/orders/mine returns only the caller's orders.

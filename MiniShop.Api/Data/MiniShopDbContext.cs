@@ -33,9 +33,11 @@ public class MiniShopDbContext(DbContextOptions<MiniShopDbContext> options)
             u.HasIndex(x => x.Email).IsUnique();
             // Seed 2 users matching dev token identities
             u.HasData(
-                new { Id = 1, Email = "alice@minishop.test" },
-                new { Id = 2, Email = "bob@minishop.test" }
+                    new { Id = 1, Email = "alice@minishop.test", ExternalId = "alice" },
+                    new { Id = 2, Email = "bob@minishop.test", ExternalId = "bob" }
             );
+            u.Property(x => x.ExternalId).HasMaxLength(128);
+            u.HasIndex(x => x.ExternalId).IsUnique().HasFilter("[ExternalId] IS NOT NULL");
         });
 
         modelBuilder.Entity<Order>(o =>

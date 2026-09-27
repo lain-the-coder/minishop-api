@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MiniShop.Api.Dtos;
 using MiniShop.Dtos;
@@ -25,21 +26,21 @@ public class ProductsController(IProductService productService) : ControllerBase
         var product = await productService.GetByIdAsync(id);
         return Ok(product);
     }
-
+    [Authorize(Policy = "CanManageCatalog")]
     [HttpPost]
     public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductRequest request)
     {
         var created = await productService.CreateAsync(request);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
-
+    [Authorize(Policy = "CanManageCatalog")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] CreateProductRequest request)
     {
         await productService.UpdateAsync(id, request);
         return NoContent();
     }
-
+    [Authorize(Policy = "CanManageCatalog")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

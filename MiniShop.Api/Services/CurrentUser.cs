@@ -1,37 +1,25 @@
+using System.Security.Claims;
+
 namespace MiniShop.Api.Services;
 
-public class CurrentUser : ICurrentUser
+public class CurrentUser(IHttpContextAccessor accessor) : ICurrentUser
 {
-    public bool IsAuthenticated
-    {
-        get
-        {
-            return true;
-        }
-    }
+    private ClaimsPrincipal? Principal => accessor.HttpContext?.User;
 
-    public string? ExternalId
-    {
-        get
-        {
-            return "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
-        }
-    }
+    public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;
 
-    public string? Name
-    {
-        get
-        {
-            return "Dev User";
-        }
-    }
+    // Checks "sub", falling back to NameIdentifier if mapping is ever enabled
+    public string? ExternalId => Principal?.FindFirst("sub")?.Value
+                              ?? Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-    public IReadOnlyList<string> Roles
-    {
-        get
-        {
-            // C# 12 collection expression: ["Admin"]
-            return ["Admin"];
-        }
-    }
+    // Checks "name", falling back to "unique_name" (which dotnet user-jwts includes)
+    public string? Name => Principal?.FindFirst("name")?.Value
+                        ?? Principal?.FindFirst("unique_name")?.Value;
+
+    // Reads both short "role" and ClaimTypes.Role to be safe across environments
+    public IReadOnlyList<string> Roles => Principal?.FindAll("role")
+        .Concat(Principal.FindAll(ClaimTypes.Role))
+        .Select(c => c.Value)
+        .Distinct()
+        .ToList() ?? [];
 }
