@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniShop.Api.Data;
@@ -9,6 +10,7 @@ namespace MiniShop.Api.Controllers;
 [Route("api/[controller]")]
 public class MeController(ICurrentUser currentUser, IClock clock) : ControllerBase
 {
+    [Authorize]
     [HttpGet]
     public IActionResult Get()
     {
