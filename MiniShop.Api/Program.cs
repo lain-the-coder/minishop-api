@@ -4,6 +4,7 @@ using MiniShop.Api.Demo;
 using MiniShop.Api.Middleware;
 using MiniShop.Api.Services;
 using MiniShop.Repositories;
+using MiniShop.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddDbContext<MiniShopDbContext>(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 
